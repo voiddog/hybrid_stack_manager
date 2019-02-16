@@ -2,6 +2,7 @@ group 'com.vdian.hybridstackmanager.hybridstackmanager'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.support_version = '27.1.1'
     repositories {
         google()
         jcenter()
@@ -31,4 +32,8 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+}
+
+dependencies {
+    implementation "com.android.support:appcompat-v7:$support_version"
 }

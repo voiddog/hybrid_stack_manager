@@ -1,35 +1,28 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:hybrid_stack_manager/hybrid_stack_manager.dart';
+import 'example.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+void main() {
+  GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  VDRouter.init(key: navKey);
+  runApp(MaterialApp(
+    navigatorKey: navKey,
+    home: EmptyPage(),
+  ));
+  VDRouter.instance.route.addAll({
+    "example": (context, options) {
+      return ExamplePage(title: options?.args["title"]);
+    }
+  });
+  VDRouter.instance.startInitRoute();
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class EmptyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+    return Container(
+      color: Colors.white,
     );
   }
 }

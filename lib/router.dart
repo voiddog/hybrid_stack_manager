@@ -61,22 +61,30 @@ class VDRouter {
     Map initRoute = await getInitRoute();
     if (initRoute != null && initRoute["pageName"] != null) {
       String pageName = initRoute["pageName"];
-      Map<String, dynamic> args = initRoute["args"];
+      Map args = initRoute["args"];
       String nativePageId = initRoute["nativePageId"];
       return await push(
         routerOptions: VDRouteOptions(
           pageName: pageName,
           args: args,
-          nativePageId: nativePageId
-        )
+        ),
+        nativePageId: nativePageId
       );
     }
   }
 
+  /// 按了返回键, true 表述消耗了返回键动作
+  bool onBackPressed() {
+    if (_keyPageMap.length > 0) {
+      /// 存在关键帧
+      _navState?.pop();
+      return true;
+    }
+    return false;
+  }
 
   /// push 一个 flutter page
   /// [routerOptions] 路由参数
-  /// [nativePageId] 传入此数值表示该页面是个关键帧
   Future<dynamic> push({VDRouteOptions routerOptions, String nativePageId}) async {
     assert(routerOptions != null);
     var pageName = routerOptions.pageName;
@@ -201,13 +209,10 @@ class VDRouteOptions {
   /// 页面参数
   final Map args;
 
-  /// 对应 native 页的 nativePageId
-  final String nativePageId;
-
   /// 获取url中的页面名
   final String pageName;
 
-  VDRouteOptions({@required this.pageName, this.args, this.nativePageId});
+  VDRouteOptions({@required this.pageName, this.args});
 }
 
 /// 页面栈监听器
@@ -254,15 +259,19 @@ class _FlutterPageObserver extends NavigatorObserver {
 }
 
 class VDMaterialPageRoute<T> extends MaterialPageRoute<T> {
-  final WidgetBuilder builder;
   final VDRouteOptions options;
   final String nativePageId;
 
   VDMaterialPageRoute(
-      {this.builder,
+      {WidgetBuilder builder,
       this.options,
       this.nativePageId,
-      RouteSettings settings = const RouteSettings()});
+      RouteSettings settings = const RouteSettings()})
+      :super(builder: builder, settings: settings);
+
+  @override
+  Duration get transitionDuration => 
+    nativePageId != null ? Duration(milliseconds: 0) : super.transitionDuration;
 
   @override
   T get currentResult => _currentResult;

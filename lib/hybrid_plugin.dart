@@ -95,8 +95,8 @@ class HybridPlugin {
               routerOptions: VDRouteOptions(
                 pageName: args["pageName"],
                 args: args["args"],
-                nativePageId: args["nativePageId"]
-              )
+              ),
+              nativePageId: args["nativePageId"]
             );
           }
           break;
@@ -108,6 +108,10 @@ class HybridPlugin {
             SystemChannels.platform.invokeMethod("SystemChrome.setSystemUIOverlayStyle", _toMap(preTheme));
           }
           break;
+        }
+        case "onBackPressed": {
+          /// 这里重写了 onBackPressed 是防止出现黑屏无法返回退出的情况
+          return VDRouter.instance.onBackPressed();
         }
       }
     });
